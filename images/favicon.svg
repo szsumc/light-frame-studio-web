@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Light Frame Studio">
+  <rect width="64" height="64" rx="13" fill="#183b43"/>
+  <rect x="12" y="15" width="40" height="32" rx="3" fill="#fff"/>
+  <rect x="16" y="19" width="32" height="19" rx="1.5" fill="#24728a"/>
+  <path d="M18 35l8-8 6 5 5-4 9 7H18z" fill="#7cc8d6"/>
+  <circle cx="40.5" cy="23.5" r="2.5" fill="#f8d981"/>
+  <path d="M20 42h24" stroke="#183b43" stroke-width="2" stroke-linecap="round"/>
+</svg>
