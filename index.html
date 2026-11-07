@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f0e6">
+  <title>照片边框工具</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <img class="app-icon" src="../Light Frame Studio Docs/images/favicon.svg" alt="">
+      <h1>照片边框工具</h1>
+      <span>保留原图比例 · 自动读取 EXIF · 本地处理</span>
+    </header>
+
+    <button id="mobileUploadButton" class="mobile-upload" type="button">添加照片</button>
+
+    <main class="workbench">
+      <aside class="controls">
+        <button id="uploadButton" class="drop-zone" type="button">
+          <span class="upload-mark">↑</span>
+          <strong>添加照片</strong>
+          <small>拖拽或点击上传 · 支持 JPG / PNG / WebP</small>
+        </button>
+
+        <section aria-labelledby="templatesTitle">
+          <h2 id="templatesTitle">选择模板 <span>边框按照片比例自动适配</span></h2>
+          <div id="templateGrid" class="template-grid">
+            <button class="template-card selected" type="button" data-template="1" aria-label="模板 1"><img src="../sample/sample1.jpg" alt=""></button>
+            <button class="template-card" type="button" data-template="3" aria-label="模板 3"><img src="../sample/sample3.jpg" alt=""></button>
+            <button class="template-card" type="button" data-template="5" aria-label="模板 5"><img src="../sample/sample5.jpg" alt=""></button>
+            <button class="template-card" type="button" data-template="2" aria-label="模板 2"><img src="../sample/sample2.jpg" alt=""></button>
+            <button class="template-card" type="button" data-template="4" aria-label="模板 4"><img src="../sample/sample4.jpg" alt=""></button>
+            <button class="template-card" type="button" data-template="6" aria-label="模板 6"><img src="../sample/sample6.jpg" alt=""></button>
+          </div>
+        </section>
+
+        <section class="settings" aria-label="显示设置">
+          <label class="setting-row">
+            <span class="line-icon">A</span>
+            <span>标识 / Logo</span>
+            <span class="switch"><input id="logoToggle" type="checkbox" checked><span></span></span>
+          </label>
+          <label class="setting-row">
+            <span class="line-icon icon-camera" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7.5h3l1.3-2h7.4l1.3 2h3A1.5 1.5 0 0 1 21.5 9v8a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V9A1.5 1.5 0 0 1 4 7.5Z"></path><circle cx="12" cy="13" r="3.6"></circle></svg></span>
+            <span>EXIF 信息</span>
+            <span class="switch"><input id="exifToggle" type="checkbox" checked><span></span></span>
+          </label>
+          <label class="setting-row">
+            <span class="line-icon icon-palette" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="7" height="7" rx="1.2"></rect><rect x="13.5" y="4" width="7" height="7" rx="1.2"></rect><rect x="3.5" y="14" width="7" height="7" rx="1.2"></rect><path d="M14 17.5h6.5M17.25 14.25v6.5"></path></svg></span>
+            <span>配色采样</span>
+            <span class="switch"><input id="paletteToggle" type="checkbox" checked><span></span></span>
+          </label>
+        </section>
+
+        <button id="downloadButton" class="download" type="button" disabled>下载边框照片</button>
+        <p id="statusText" class="status" role="status">请选择一张照片开始</p>
+      </aside>
+
+      <section class="preview-column" aria-label="照片预览">
+        <div id="previewStage" class="preview">
+          <canvas id="previewCanvas" width="2400" height="1920" aria-label="边框照片预览"></canvas>
+          <div id="emptyState" class="empty-state">
+            <span>▣</span>
+            <strong>上传一张照片</strong>
+            <small>选择模板后即可预览和下载</small>
+          </div>
+          <div class="preview-actions">
+            <button id="changePhotoButton" class="preview-action" type="button" disabled>↻ 更换照片</button>
+            <button id="changeLogoButton" class="preview-action" type="button" disabled>▣ 更换 Logo</button>
+          </div>
+        </div>
+        <p class="privacy-note">照片仅在此设备的浏览器中处理，不会上传至服务器。</p>
+      </section>
+    </main>
+  </div>
+
+  <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+  <input id="logoInput" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+  <script src="./app.js"></script>
+</body>
+</html>
