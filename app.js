@@ -315,7 +315,15 @@
       let selected = -1; let selectedRange = -1; let channel = 0;
       boxes.forEach((box, index) => {
         if (box.length < 2) return;
-        const ranges = [0, 1, 2].map((axis) => Math.max(...box.map((point) => point[axis])) - Math.min(...box.map((point) => point[axis])));
+        const minimum = [255, 255, 255];
+        const maximum = [0, 0, 0];
+        box.forEach((point) => {
+          for (let axis = 0; axis < 3; axis += 1) {
+            if (point[axis] < minimum[axis]) minimum[axis] = point[axis];
+            if (point[axis] > maximum[axis]) maximum[axis] = point[axis];
+          }
+        });
+        const ranges = maximum.map((value, axis) => value - minimum[axis]);
         const range = Math.max(...ranges) * box.length;
         if (range > selectedRange) { selected = index; selectedRange = range; channel = ranges.indexOf(Math.max(...ranges)); }
       });
@@ -486,7 +494,11 @@
         state.showExif = false;
         exifToggle.checked = false;
       }
-      state.palette = extractPalette(loaded.image);
+      try {
+        state.palette = extractPalette(loaded.image);
+      } catch (error) {
+        state.palette = ["#182A2D", "#56483D", "#B29C83", "#7D5C47", "#F3F0E9"];
+      }
       previewStage.classList.add("ready");
       downloadButton.disabled = false;
       changePhotoButton.disabled = false;
