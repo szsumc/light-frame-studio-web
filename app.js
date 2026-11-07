@@ -471,24 +471,53 @@
     return imageFromFile(file);
   }
 
+  function fileExtension(file) {
+    return (file.name.split(".").pop() || "").toLowerCase();
+  }
+
+  function isHeicFile(file) {
+    const type = (file.type || "").toLowerCase();
+    return ["heic", "heif"].includes(fileExtension(file)) || ["image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"].includes(type);
+  }
+
+  async function convertHeicToJpeg(file) {
+    if (typeof window.heic2any !== "function") {
+      throw new Error("HEIC 转换组件未加载");
+    }
+    const converted = await window.heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+    const jpeg = Array.isArray(converted) ? converted[0] : converted;
+    if (!(jpeg instanceof Blob)) {
+      throw new Error("HEIC 转换未返回图片");
+    }
+    const name = file.name.replace(/\.(heic|heif)$/i, ".jpg") || "photo.jpg";
+    return new File([jpeg], name, { type: "image/jpeg", lastModified: file.lastModified });
+  }
+
   async function loadPhoto(file) {
     if (!file) return;
-    const extension = (file.name.split(".").pop() || "").toLowerCase();
+    const originalFile = file;
+    const extension = fileExtension(file);
+    const heic = isHeicFile(file);
     const supported = ["jpg", "jpeg", "png", "webp"];
-    if (!supported.includes(extension)) {
-      setStatus(extension === "heic" ? "当前版本暂不支持 HEIC，请转换为 JPG 后再试" : "请选择 JPG、PNG 或 WebP 图片", true);
+    if (!supported.includes(extension) && !heic) {
+      setStatus("请选择 JPG、PNG、WebP 或 HEIC 图片", true);
       return;
     }
 
     try {
-      setStatus("正在读取照片…");
+      if (heic) {
+        setStatus("正在本机转换 HEIC 照片…");
+        file = await convertHeicToJpeg(file);
+      } else {
+        setStatus("正在读取照片…");
+      }
       const loaded = await photoFromFile(file);
-      const exif = file.type === "image/jpeg" ? readExif(await file.arrayBuffer()) : {};
+      const exif = !heic && file.type === "image/jpeg" ? readExif(await file.arrayBuffer()) : {};
       if (state.photoUrl) URL.revokeObjectURL(state.photoUrl);
       if (state.photo && typeof state.photo.close === "function") state.photo.close();
       state.photo = loaded.image;
       state.photoUrl = loaded.url;
-      state.photoName = file.name;
+      state.photoName = originalFile.name;
       state.exif = exif;
       if (!hasExifInfo(exif)) {
         state.showExif = false;
@@ -504,9 +533,9 @@
       changePhotoButton.disabled = false;
       changeLogoButton.disabled = false;
       render();
-      setStatus("已添加 1 张照片 · " + file.name);
+      setStatus("已添加 1 张照片 · " + originalFile.name);
     } catch (error) {
-      setStatus("照片读取失败，请尝试另一张图片", true);
+      setStatus(heic ? "HEIC 照片转换失败，请尝试另一张照片" : "照片读取失败，请尝试另一张图片", true);
     }
   }
 

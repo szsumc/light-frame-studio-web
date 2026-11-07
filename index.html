@@ -22,7 +22,7 @@
         <button id="uploadButton" class="drop-zone" type="button">
           <span class="upload-mark">↑</span>
           <strong>添加照片</strong>
-          <small>拖拽或点击上传 · 支持 JPG / PNG / WebP</small>
+          <small>拖拽或点击上传 · 支持 JPG / PNG / WebP / HEIC</small>
         </button>
 
         <section aria-labelledby="templatesTitle">
@@ -77,8 +77,9 @@
     </main>
   </div>
 
-  <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+  <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif" hidden>
   <input id="logoInput" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+  <script src="./vendor/heic2any.min.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
