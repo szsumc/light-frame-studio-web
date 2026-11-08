@@ -2,6 +2,7 @@
   "use strict";
 
   const PREVIEW_MAX_EDGE = 1200;
+  const usesMobileBlurFallback = /Android|iP(?:ad|hone|od)/.test(navigator.userAgent);
   const photoInput = document.getElementById("photoInput");
   const logoInput = document.getElementById("logoInput");
   const previewCanvas = document.getElementById("previewCanvas");
@@ -111,10 +112,30 @@
   }
 
   function drawBlurredBackground(context, width, height, opacity, blurRadius) {
-    context.save();
-    context.filter = "blur(" + blurRadius + "px) brightness(.62)";
-    drawCover(context, state.photo, -blurRadius, -blurRadius, width + blurRadius * 2, height + blurRadius * 2);
-    context.restore();
+    if (usesMobileBlurFallback) {
+      // Mobile browsers can silently ignore CanvasRenderingContext2D.filter on large canvases.
+      // Drawing a small background and smoothly scaling it back is an equivalent, export-safe blur.
+      const scale = 1 / Math.max(12, Math.round(blurRadius * 1.25));
+      const sample = document.createElement("canvas");
+      sample.width = Math.max(1, Math.round(width * scale));
+      sample.height = Math.max(1, Math.round(height * scale));
+      const sampleContext = sample.getContext("2d", { alpha: false });
+      sampleContext.imageSmoothingEnabled = true;
+      sampleContext.imageSmoothingQuality = "high";
+      drawCover(sampleContext, state.photo, 0, 0, sample.width, sample.height);
+      context.save();
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      context.drawImage(sample, 0, 0, sample.width, sample.height, 0, 0, width, height);
+      context.restore();
+      context.fillStyle = "rgba(0, 0, 0, .38)";
+      context.fillRect(0, 0, width, height);
+    } else {
+      context.save();
+      context.filter = "blur(" + blurRadius + "px) brightness(.62)";
+      drawCover(context, state.photo, -blurRadius, -blurRadius, width + blurRadius * 2, height + blurRadius * 2);
+      context.restore();
+    }
     context.fillStyle = "rgba(30, 29, 26, " + opacity + ")";
     context.fillRect(0, 0, width, height);
   }
